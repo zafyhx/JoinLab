@@ -21,7 +21,8 @@
 [20 Detektor Logika](#-sistem-diagnosis-20-logical-detectors) •
 [Panduan Instalasi](#-panduan-instalasi--memulai) •
 [Keamanan Sandbox](#-keamanan--isolasi-sandbox) •
-[Pengujian](#-pengujian-otomatis)
+[Pengujian](#-pengujian-otomatis) •
+[Tim Pengembang](#-tim-pengembang)
 
 </div>
 
@@ -371,12 +372,18 @@ Status Pengujian Saat Ini:
 
 ---
 
-## 👥 Tim & Kontribusi
+## 👥 Tim Pengembang
 
-Proyek ini dikembangkan sebagai prototipe perangkat lunak edukasi dalam mata kuliah **Pengembangan Software Edukasi**.
+Proyek ini dikembangkan sebagai perangkat lunak edukasi interaktif dalam mata kuliah **Pengembangan Software Edukasi**:
 
-- **Arsitektur & Pengembangan:** Tim Pengembang JoinLab
-- **Panduan Kontribusi:** Silakan gunakan standar [*Conventional Commits*](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`) saat mengajukan perubahan kode.
+| Pengembang | Peran & Kontribusi |
+|---|---|
+| **Alifian Sultan Basundara** | Software Engineer & Instructional Design |
+| **Bagus Satyo Nugroho** | Software Engineer & Fullstack Development |
+| **Ridwan Hakim Mashadi** | Software Engineer & Database Architecture |
+
+### 🤝 Panduan Kontribusi
+Silakan gunakan standar [*Conventional Commits*](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`) saat mengajukan perubahan kode atau pull request.
 
 ---
 
