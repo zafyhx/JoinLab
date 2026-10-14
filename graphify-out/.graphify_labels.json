@@ -1,0 +1,21 @@
+{
+  "0": "Backend, Auth & Database",
+  "1": "React UI Components",
+  "2": "Diagnosis Engine (E01-E20)",
+  "3": "Build Config & Scripts",
+  "4": "Sandbox & SQL Guard",
+  "5": "Soal CRUD (Dosen)",
+  "6": "TypeScript Config",
+  "7": "Dev Dependencies",
+  "8": "Runtime Dependencies",
+  "9": "npm Scripts",
+  "10": "Result Grading (Normalize & Compare)",
+  "11": "Progress & Hints",
+  "12": "App Shell & Layout",
+  "13": "Proxy / CSRF",
+  "14": "Question Bank Seed",
+  "15": "Logout Flow",
+  "16": "ERD Layout Builder",
+  "17": "Next Config",
+  "18": "PostCSS Config"
+}
