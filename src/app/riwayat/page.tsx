@@ -3,8 +3,9 @@ import { attempts, questions } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { Navbar } from "@/components/shared/Navbar";
 import { getEffectiveStudent } from "@/lib/auth/session";
-import { History, CheckCircle2, XCircle, AlertTriangle, Clock } from "lucide-react";
+import { History, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 export default async function HistoryPage() {
   const student = await getEffectiveStudent();
@@ -29,31 +30,30 @@ export default async function HistoryPage() {
     .orderBy(desc(attempts.createdAt));
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-6 sm:p-8">
+      <main className="page-container">
         <div className="mb-6">
-          <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 mb-1.5 uppercase tracking-wider">
-            <History className="w-4 h-4" />
-            <span>Riwayat Latihan</span>
-          </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 mb-1">
-            Riwayat Percobaan Query
-          </h1>
-          <p className="text-sm text-slate-600">
-            Daftar seluruh submission query yang pernah kamu jalankan beserta status evaluasinya.
+          <span className="page-eyebrow flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Riwayat latihan
+          </span>
+          <h1 className="page-title mt-2">Riwayat percobaan query</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Daftar seluruh submission query yang pernah kamu jalankan beserta
+            status evaluasinya.
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-hidden rounded-lg border bg-card">
           {attemptList.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">
-              <History className="w-10 h-10 mx-auto mb-3 stroke-slate-300" />
+            <div className="p-12 text-center text-muted-foreground">
+              <History className="mx-auto mb-3 h-10 w-10 stroke-border" />
               <p className="text-sm">Belum ada riwayat percobaan query.</p>
               <Link
                 href="/skema/akademik"
-                className="mt-4 inline-block text-xs font-semibold text-blue-600 hover:underline"
+                className="mt-4 inline-block text-xs font-semibold text-accent hover:underline"
               >
                 Mulai latihan sekarang →
               </Link>
@@ -61,55 +61,55 @@ export default async function HistoryPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 border-b border-slate-200">
+                <thead className="border-b bg-muted/50 text-muted-foreground">
                   <tr>
                     <th className="p-3.5 font-semibold">Soal</th>
                     <th className="p-3.5 font-semibold">Query SQL</th>
                     <th className="p-3.5 font-semibold">Status</th>
-                    <th className="p-3.5 font-semibold">Baris (Hasil/Kunci)</th>
-                    <th className="p-3.5 font-semibold">Kode Error</th>
+                    <th className="p-3.5 font-semibold">Baris (hasil/kunci)</th>
+                    <th className="p-3.5 font-semibold">Kode error</th>
                     <th className="p-3.5 font-semibold">Petunjuk</th>
                     <th className="p-3.5 font-semibold">Waktu</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y">
                   {attemptList.map((att) => (
-                    <tr key={att.id} className="hover:bg-slate-50/60">
+                    <tr key={att.id} className="transition-colors hover:bg-muted/40">
                       <td className="p-3.5">
                         <Link
                           href={`/soal/${att.questionCode}`}
-                          className="font-mono font-bold text-blue-600 hover:underline block"
+                          className="block font-mono font-bold text-accent hover:underline"
                         >
                           {att.questionCode}
                         </Link>
-                        <span className="text-[11px] text-slate-500 truncate block max-w-xs">
+                        <span className="block max-w-xs truncate text-[11px] text-muted-foreground">
                           {att.questionTitle}
                         </span>
                       </td>
-                      <td className="p-3.5 max-w-sm">
-                        <pre className="font-mono text-[11px] text-slate-700 truncate bg-slate-50 p-1.5 rounded border border-slate-100">
+                      <td className="max-w-sm p-3.5">
+                        <pre className="truncate rounded border bg-muted p-1.5 font-mono text-[11px] text-foreground">
                           {att.submittedSql}
                         </pre>
                       </td>
                       <td className="p-3.5">
                         {att.status === "correct" ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <CheckCircle2 className="w-3 h-3" />
+                          <Badge variant="success">
+                            <CheckCircle2 className="h-3 w-3" />
                             Benar
-                          </span>
+                          </Badge>
                         ) : att.status === "incorrect" ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-700 border border-red-200">
-                            <XCircle className="w-3 h-3" />
-                            Belum Tepat
-                          </span>
+                          <Badge variant="destructive">
+                            <XCircle className="h-3 w-3" />
+                            Belum tepat
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                            <AlertTriangle className="w-3 h-3" />
+                          <Badge variant="warning">
+                            <AlertTriangle className="h-3 w-3" />
                             {att.status}
-                          </span>
+                          </Badge>
                         )}
                       </td>
-                      <td className="p-3.5 text-slate-600">
+                      <td className="p-3.5 text-muted-foreground">
                         {att.actualRowCount ?? "-"} / {att.expectedRowCount ?? "-"}
                       </td>
                       <td className="p-3.5">
@@ -118,20 +118,20 @@ export default async function HistoryPage() {
                             {(att.errorCodes as string[]).map((c) => (
                               <span
                                 key={c}
-                                className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border"
+                                className="rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground"
                               >
                                 {c}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <span className="text-slate-400">-</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </td>
-                      <td className="p-3.5 text-slate-500 font-medium">
+                      <td className="p-3.5 font-medium text-muted-foreground">
                         {att.hintsUsed > 0 ? `Lvl ${att.hintsUsed}` : "-"}
                       </td>
-                      <td className="p-3.5 text-slate-400 whitespace-nowrap">
+                      <td className="whitespace-nowrap p-3.5 text-muted-foreground">
                         {att.createdAt.toLocaleDateString("id-ID", {
                           day: "numeric",
                           month: "short",

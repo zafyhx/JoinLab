@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { ErdData, ErdTable, ErdRelation } from "@/lib/domain/erd/ErdBuilder";
+import { ErdData, ErdTable } from "@/lib/domain/erd/ErdBuilder";
 import { Key, Link as LinkIcon, Database } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ErdViewerProps {
   erdData: ErdData | null;
   highlightTables?: string[];
 }
+
+const KEY_GOLD = "#d9a24b";
 
 export function ErdViewer({ erdData, highlightTables = [] }: ErdViewerProps) {
   const { tables, relations } = useMemo(() => {
@@ -19,14 +22,13 @@ export function ErdViewer({ erdData, highlightTables = [] }: ErdViewerProps) {
 
   if (!erdData || tables.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-slate-400 border rounded-lg bg-slate-50 min-h-[300px]">
-        <Database className="w-10 h-10 mb-2 stroke-slate-300" />
+      <div className="flex min-h-[300px] flex-col items-center justify-center rounded-md border bg-muted p-8 text-muted-foreground">
+        <Database className="mb-2 h-10 w-10 stroke-border" />
         <p className="text-sm">Metadata ERD belum tersedia untuk skema ini.</p>
       </div>
     );
   }
 
-  // Calculate canvas bounding box
   const maxX = Math.max(...tables.map((t) => (t.x || 0) + (t.width || 240)), 650);
   const maxY = Math.max(...tables.map((t) => (t.y || 0) + (t.height || 200)), 450);
 
@@ -34,19 +36,18 @@ export function ErdViewer({ erdData, highlightTables = [] }: ErdViewerProps) {
   tables.forEach((t) => tableMap.set(t.name.toLowerCase(), t));
 
   return (
-    <div className="w-full overflow-auto border rounded-xl bg-slate-900 shadow-sm p-4 min-h-[350px]">
-      <div className="text-xs text-slate-400 font-medium mb-3 flex items-center gap-2">
-        <Database className="w-4 h-4 text-blue-400" />
-        <span>Entity Relationship Diagram (ERD)</span>
+    <div className="w-full overflow-auto rounded-md border border-ink-border bg-ink p-4">
+      <div className="mb-3 flex items-center gap-2 text-xs font-medium text-background/60">
+        <Database className="h-4 w-4 text-accent" />
+        Entity Relationship Diagram (ERD)
       </div>
 
       <div
-        className="relative bg-slate-950/80 rounded-lg border border-slate-800 p-4"
+        className="relative rounded-md border border-ink-border bg-ink p-4"
         style={{ width: `${maxX + 60}px`, height: `${maxY + 60}px` }}
       >
-        {/* SVG Connectors for Relations */}
         <svg
-          className="absolute inset-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0"
           width={maxX + 60}
           height={maxY + 60}
         >
@@ -59,7 +60,7 @@ export function ErdViewer({ erdData, highlightTables = [] }: ErdViewerProps) {
               markerWidth="6"
               markerHeight="6"
             >
-              <circle cx="5" cy="5" r="3" fill="#38bdf8" />
+              <circle cx="5" cy="5" r="3" fill={KEY_GOLD} />
             </marker>
           </defs>
 
@@ -74,7 +75,6 @@ export function ErdViewer({ erdData, highlightTables = [] }: ErdViewerProps) {
             const toX = (toT.x || 0) + (toT.width || 220) / 2;
             const toY = (toT.y || 0) + (toT.height || 160) / 2;
 
-            // Simple bezier path
             const midX = (fromX + toX) / 2;
             const pathData = `M ${fromX} ${fromY} Q ${midX} ${(fromY + toY) / 2 - 30} ${toX} ${toY}`;
 
@@ -83,67 +83,66 @@ export function ErdViewer({ erdData, highlightTables = [] }: ErdViewerProps) {
                 key={`rel-${idx}`}
                 d={pathData}
                 fill="none"
-                stroke="#38bdf8"
-                strokeWidth="2"
-                strokeDasharray="4 2"
+                stroke={KEY_GOLD}
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
                 markerEnd="url(#dot)"
-                opacity="0.75"
+                opacity="0.7"
               />
             );
           })}
         </svg>
 
-        {/* Tables */}
         {tables.map((tbl) => {
           const isHighlighted = highlightTables.includes(tbl.name.toLowerCase());
           return (
             <div
               key={tbl.name}
-              className={`absolute rounded-lg border shadow-md overflow-hidden bg-slate-900 transition-all ${
+              className={cn(
+                "absolute overflow-hidden rounded-md border bg-ink-muted transition-all",
                 isHighlighted
-                  ? "border-blue-400 ring-2 ring-blue-500/30"
-                  : "border-slate-800"
-              }`}
+                  ? "border-accent ring-2 ring-accent/30"
+                  : "border-ink-border"
+              )}
               style={{
                 left: `${tbl.x || 40}px`,
                 top: `${tbl.y || 40}px`,
                 width: `${tbl.width || 230}px`,
               }}
             >
-              {/* Header */}
-              <div className="bg-slate-800/90 px-3 py-2 border-b border-slate-700/80 flex items-center justify-between">
-                <span className="font-semibold text-xs text-slate-100 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+              <div className="flex items-center justify-between border-b border-ink-border bg-ink-border/50 px-3 py-2">
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-background">
+                  <span className="inline-block h-2 w-2 rounded-full bg-accent" />
                   {tbl.name}
                 </span>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-background/50">
                   {tbl.columns.length} kol
                 </span>
               </div>
 
-              {/* Columns */}
-              <div className="divide-y divide-slate-800/60 text-xs">
+              <div className="divide-y divide-ink-border/60 text-xs">
                 {tbl.columns.map((col) => (
                   <div
                     key={col.name}
-                    className="px-3 py-1.5 flex items-center justify-between text-slate-300 hover:bg-slate-800/40"
+                    className="flex items-center justify-between px-3 py-1.5 text-background/80 transition-colors hover:bg-ink-border/30"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {col.pk && (
-                        <Key className="w-3 h-3 text-amber-400 flex-shrink-0" />
+                        <Key className="h-3 w-3 flex-shrink-0 text-[oklch(0.75_0.14_78)]" />
                       )}
                       {col.fk && (
-                        <LinkIcon className="w-3 h-3 text-sky-400 flex-shrink-0" />
+                        <LinkIcon className="h-3 w-3 flex-shrink-0 text-background/60" />
                       )}
                       <span
-                        className={`truncate ${
-                          col.pk ? "font-bold text-amber-200" : ""
-                        }`}
+                        className={cn(
+                          "truncate",
+                          col.pk && "font-bold text-[oklch(0.82_0.12_80)]"
+                        )}
                       >
                         {col.name}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-500 flex-shrink-0 ml-2">
+                    <span className="ml-2 flex-shrink-0 text-[10px] text-background/45">
                       {col.type}
                     </span>
                   </div>

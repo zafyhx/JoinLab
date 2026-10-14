@@ -4,6 +4,10 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { GraduationCap, ShieldCheck, LogIn, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const inputCls =
+  "h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,33 +45,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <header className="bg-white border-b border-slate-200 px-6 py-4">
-        <Link href="/" className="inline-flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-            JL
-          </div>
-          <span className="font-extrabold text-xl text-slate-900 tracking-tight">
-            Join<span className="text-blue-600">Lab</span>
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="border-b bg-card px-6 py-4">
+        <Link href="/" className="inline-flex items-center gap-2">
+          <span aria-hidden className="text-2xl font-semibold leading-none text-accent">
+            ⋈
+          </span>
+          <span className="text-xl font-semibold tracking-tight text-foreground">
+            JoinLab
           </span>
         </Link>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6">
-          <div className="text-center space-y-1">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 mb-2">
-              <LogIn className="w-6 h-6" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-slate-900">Masuk ke JoinLab</h1>
-            <p className="text-sm text-slate-500">
+      <main className="flex flex-1 items-center justify-center p-6">
+        <div className="w-full max-w-md space-y-6 rounded-lg border bg-card p-8">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Masuk ke JoinLab
+            </h1>
+            <p className="text-sm text-muted-foreground">
               Lanjutkan latihan SQL JOIN kamu.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="email" className="text-xs font-semibold text-slate-700">
+              <label htmlFor="email" className="text-xs font-semibold text-foreground">
                 Email
               </label>
               <input
@@ -77,13 +80,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@contoh.ac.id"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-xs font-semibold text-slate-700">
-                Kata Sandi
+              <label htmlFor="password" className="text-xs font-semibold text-foreground">
+                Kata sandi
               </label>
               <input
                 id="password"
@@ -92,55 +95,51 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
 
             {error && (
-              <p className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
                 {error}
               </p>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm disabled:opacity-60 transition-colors"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
-              <span>{loading ? "Memproses..." : "Masuk"}</span>
-            </button>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+              {loading ? "Memproses..." : "Masuk"}
+            </Button>
           </form>
 
-          <div className="pt-4 border-t border-slate-100 space-y-3">
-            <p className="text-center text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <div className="space-y-3 border-t pt-4">
+            <p className="text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Atau masuk cepat untuk demo
             </p>
             <div className="grid grid-cols-2 gap-3">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => submitLogin("mahasiswa@joinlab.test", "password123")}
                 disabled={loading}
-                className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-900 text-white disabled:opacity-60 transition-colors"
               >
-                <GraduationCap className="w-4 h-4" />
-                <span>Mahasiswa</span>
-              </button>
-              <button
+                <GraduationCap className="h-4 w-4" />
+                Mahasiswa
+              </Button>
+              <Button
                 type="button"
+                variant="outline"
                 onClick={() => submitLogin("dosen@joinlab.test", "password123")}
                 disabled={loading}
-                className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 disabled:opacity-60 transition-colors"
               >
-                <ShieldCheck className="w-4 h-4 text-blue-600" />
-                <span>Dosen</span>
-              </button>
+                <ShieldCheck className="h-4 w-4 text-accent" />
+                Dosen
+              </Button>
             </div>
           </div>
 
-          <p className="text-center text-sm text-slate-500">
+          <p className="text-center text-sm text-muted-foreground">
             Belum punya akun?{" "}
-            <Link href="/register" className="font-semibold text-blue-600 hover:underline">
+            <Link href="/register" className="font-semibold text-accent hover:underline">
               Daftar
             </Link>
           </p>

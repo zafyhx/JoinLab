@@ -16,6 +16,8 @@ import {
   FileQuestion,
   Search,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 type SchemaOption = { id: number; slug: string; name: string };
 
@@ -92,7 +94,6 @@ export function SoalManager() {
   const [loading, setLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
 
-  // FR-19: pencarian & filter soal
   const [search, setSearch] = useState("");
   const [filterSchema, setFilterSchema] = useState<string>("all");
   const [filterLevel, setFilterLevel] = useState<string>("all");
@@ -279,63 +280,61 @@ export function SoalManager() {
   }
 
   const selectCls =
-    "px-3 py-2 rounded-lg border border-slate-300 text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+    "h-9 rounded-md border border-input bg-card px-3 py-2 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="sticky top-0 z-30 border-b bg-card">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
           <div className="flex items-center gap-3">
             <Link
               href="/dosen"
-              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               title="Kembali ke panel dosen"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="h-5 w-5" />
             </Link>
             <div>
-              <h1 className="text-lg font-extrabold text-slate-900">Kelola Soal</h1>
-              <p className="text-xs text-slate-500">
+              <h1 className="text-lg font-semibold text-foreground">
+                Kelola soal
+              </h1>
+              <p className="text-xs text-muted-foreground">
                 Tambah, ubah, publikasikan, dan pratinjau kunci jawaban soal.
               </p>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={openCreate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Soal</span>
-          </button>
+          <Button type="button" onClick={openCreate}>
+            <Plus className="h-4 w-4" />
+            Tambah Soal
+          </Button>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-6 sm:p-8 space-y-6">
+      <main className="page-container space-y-6">
         {listError && (
-          <p className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
             {listError}
           </p>
         )}
 
         {/* Form */}
         {showForm && (
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-5">
+          <div className="space-y-5 rounded-lg border bg-card p-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900">
-                {editingId ? "Ubah Soal" : "Tambah Soal Baru"}
+              <h2 className="text-lg font-semibold text-foreground">
+                {editingId ? "Ubah soal" : "Tambah soal baru"}
               </h2>
               <button
                 type="button"
                 onClick={closeForm}
-                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
+                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Field label="Kode Soal">
                 <input
                   value={form.code}
@@ -388,7 +387,7 @@ export function SoalManager() {
               />
             </Field>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Field label="Tabel Acuan (pisahkan dengan koma)">
                 <input
                   value={form.requiredTablesText}
@@ -416,48 +415,59 @@ export function SoalManager() {
                   placeholder="SELECT ... FROM ... JOIN ..."
                   className={`${inputCls} font-mono text-xs`}
                 />
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={handlePreview}
                   disabled={previewing || !form.expectedSql.trim()}
-                  className="self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-900 text-white disabled:opacity-50 transition-colors"
+                  className="self-start"
                 >
-                  {previewing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                  <span>Preview</span>
-                </button>
+                  {previewing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
+                  Preview
+                </Button>
               </div>
             </Field>
 
             {preview && (
-              <div className="border border-slate-200 rounded-lg p-4 space-y-2">
+              <div className="space-y-2 rounded-md border p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-700">
-                    Hasil Pratinjau {preview.rowCount != null ? `(${preview.rowCount} baris)` : ""}
+                  <span className="text-xs font-semibold text-foreground">
+                    Hasil pratinjau {preview.rowCount != null ? `(${preview.rowCount} baris)` : ""}
                   </span>
                   {preview.executionMs != null && (
-                    <span className="text-[11px] text-slate-400">{preview.executionMs} ms</span>
+                    <span className="text-[11px] text-muted-foreground">
+                      {preview.executionMs} ms
+                    </span>
                   )}
                 </div>
                 {preview.error ? (
-                  <p className="text-xs text-red-600">{preview.error}</p>
+                  <p className="text-xs text-destructive">{preview.error}</p>
                 ) : (
-                  <div className="overflow-x-auto max-h-64">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-50 text-slate-600">
+                  <div className="max-h-64 overflow-x-auto">
+                    <table className="w-full border-collapse text-left text-xs">
+                      <thead className="bg-muted/50 text-muted-foreground">
                         <tr>
                           {preview.columns.map((c) => (
-                            <th key={c} className="p-2 font-semibold border border-slate-200">
+                            <th key={c} className="border p-2 font-semibold">
                               {c}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y">
                         {preview.rows.map((row, i) => (
                           <tr key={i}>
                             {(row as unknown[]).map((cell, j) => (
-                              <td key={j} className="p-2 border border-slate-100 text-slate-700">
-                                {cell === null ? <span className="text-slate-400 italic">NULL</span> : String(cell)}
+                              <td key={j} className="border p-2 text-foreground">
+                                {cell === null ? (
+                                  <span className="italic text-muted-foreground">NULL</span>
+                                ) : (
+                                  String(cell)
+                                )}
                               </td>
                             ))}
                           </tr>
@@ -469,7 +479,7 @@ export function SoalManager() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <Field label="Petunjuk 1">
                 <input
                   value={form.hint1}
@@ -494,62 +504,53 @@ export function SoalManager() {
             </div>
 
             <div className="flex flex-wrap items-center gap-6">
-              <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-700">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
                 <input
                   type="checkbox"
                   checked={form.orderMatters}
                   onChange={(e) => set("orderMatters", e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-input accent-[oklch(0.5_0.12_65)]"
                 />
                 Urutan baris berpengaruh (ORDER BY)
               </label>
-              <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-700">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
                 <input
                   type="checkbox"
                   checked={form.isPublished}
                   onChange={(e) => set("isPublished", e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-input accent-[oklch(0.5_0.12_65)]"
                 />
                 Publikasikan soal
               </label>
             </div>
 
             {formError && (
-              <p className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
                 {formError}
               </p>
             )}
 
             <div className="flex items-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm disabled:opacity-60 transition-colors"
-              >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                <span>{saving ? "Menyimpan..." : "Simpan Soal"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={closeForm}
-                className="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-              >
+              <Button type="button" onClick={handleSave} disabled={saving}>
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {saving ? "Menyimpan..." : "Simpan Soal"}
+              </Button>
+              <Button type="button" variant="secondary" onClick={closeForm}>
                 Batal
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
-        {/* FR-19: Pencarian & Filter */}
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        {/* Search & filter */}
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-4">
+          <div className="relative min-w-[220px] flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari kode atau judul soal..."
-              className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-300 text-xs text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-9 w-full rounded-md border border-input bg-card pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
           <select value={filterSchema} onChange={(e) => setFilterSchema(e.target.value)} className={selectCls}>
@@ -571,21 +572,21 @@ export function SoalManager() {
             <option value="published">Publik</option>
             <option value="draft">Draft</option>
           </select>
-          <span className="text-xs text-slate-400 ml-auto whitespace-nowrap">
+          <span className="ml-auto whitespace-nowrap text-xs text-muted-foreground">
             {filteredQuestions.length} dari {questions.length} soal
           </span>
         </div>
 
-        {/* Question Table */}
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        {/* Question table */}
+        <div className="overflow-hidden rounded-lg border bg-card">
           {loading ? (
-            <div className="p-12 text-center text-slate-400">
-              <Loader2 className="w-6 h-6 mx-auto mb-2 animate-spin" />
+            <div className="p-12 text-center text-muted-foreground">
+              <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin" />
               <p className="text-sm">Memuat daftar soal...</p>
             </div>
           ) : filteredQuestions.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">
-              <FileQuestion className="w-10 h-10 mx-auto mb-3 stroke-slate-300" />
+            <div className="p-12 text-center text-muted-foreground">
+              <FileQuestion className="mx-auto mb-3 h-10 w-10 stroke-border" />
               <p className="text-sm">
                 {questions.length === 0
                   ? "Belum ada soal yang tersimpan."
@@ -595,34 +596,34 @@ export function SoalManager() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <thead className="border-b bg-muted/50 text-muted-foreground">
                   <tr>
                     <th className="p-3.5 font-semibold">Kode</th>
                     <th className="p-3.5 font-semibold">Judul Soal</th>
                     <th className="p-3.5 font-semibold">Skema</th>
                     <th className="p-3.5 font-semibold">Level</th>
                     <th className="p-3.5 font-semibold">Status</th>
-                    <th className="p-3.5 font-semibold text-right">Aksi</th>
+                    <th className="p-3.5 text-right font-semibold">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y">
                   {filteredQuestions.map((q) => (
-                    <tr key={q.id} className="hover:bg-slate-50/60">
-                      <td className="p-3.5 font-mono font-bold text-blue-600">{q.code}</td>
-                      <td className="p-3.5 font-medium text-slate-800">{q.title}</td>
-                      <td className="p-3.5 text-slate-600">{q.schemaName}</td>
-                      <td className="p-3.5 text-slate-600">Level {q.level}</td>
+                    <tr key={q.id} className="transition-colors hover:bg-muted/40">
+                      <td className="p-3.5 font-mono font-bold text-accent">{q.code}</td>
+                      <td className="p-3.5 font-medium text-foreground">{q.title}</td>
+                      <td className="p-3.5 text-muted-foreground">{q.schemaName}</td>
+                      <td className="p-3.5 text-muted-foreground">Level {q.level}</td>
                       <td className="p-3.5">
                         {q.isPublished ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <Eye className="w-3 h-3" />
+                          <Badge variant="success">
+                            <Eye className="h-3 w-3" />
                             Publik
-                          </span>
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">
-                            <EyeOff className="w-3 h-3" />
+                          <Badge variant="outline">
+                            <EyeOff className="h-3 w-3" />
                             Draft
-                          </span>
+                          </Badge>
                         )}
                       </td>
                       <td className="p-3.5">
@@ -630,26 +631,26 @@ export function SoalManager() {
                           <button
                             type="button"
                             onClick={() => openEdit(q)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-accent"
                             title="Ubah"
                           >
-                            <Edit className="w-4 h-4" />
+                            <Edit className="h-4 w-4" />
                           </button>
                           <button
                             type="button"
                             onClick={() => handleTogglePublish(q)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-emerald-600 transition-colors"
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-success"
                             title={q.isPublished ? "Sembunyikan" : "Publikasikan"}
                           >
-                            {q.isPublished ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            {q.isPublished ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(q)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                             title="Hapus"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -666,12 +667,12 @@ export function SoalManager() {
 }
 
 const inputCls =
-  "w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "w-full rounded-md border border-input bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-semibold text-slate-700">{label}</label>
+      <label className="text-xs font-semibold text-foreground">{label}</label>
       {children}
     </div>
   );

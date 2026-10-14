@@ -4,6 +4,10 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserPlus, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const inputCls =
+  "h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -45,34 +49,33 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <header className="bg-white border-b border-slate-200 px-6 py-4">
-        <Link href="/" className="inline-flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-            JL
-          </div>
-          <span className="font-extrabold text-xl text-slate-900 tracking-tight">
-            Join<span className="text-blue-600">Lab</span>
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="border-b bg-card px-6 py-4">
+        <Link href="/" className="inline-flex items-center gap-2">
+          <span aria-hidden className="text-2xl font-semibold leading-none text-accent">
+            ⋈
+          </span>
+          <span className="text-xl font-semibold tracking-tight text-foreground">
+            JoinLab
           </span>
         </Link>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6">
-          <div className="text-center space-y-1">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 mb-2">
-              <UserPlus className="w-6 h-6" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-slate-900">Buat Akun Mahasiswa</h1>
-            <p className="text-sm text-slate-500">
+      <main className="flex flex-1 items-center justify-center p-6">
+        <div className="w-full max-w-md space-y-6 rounded-lg border bg-card p-8">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Buat akun mahasiswa
+            </h1>
+            <p className="text-sm text-muted-foreground">
               Daftar untuk mulai berlatih query SQL JOIN.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="name" className="text-xs font-semibold text-slate-700">
-                Nama Lengkap
+              <label htmlFor="name" className="text-xs font-semibold text-foreground">
+                Nama lengkap
               </label>
               <input
                 id="name"
@@ -81,12 +84,12 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama kamu"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="email" className="text-xs font-semibold text-slate-700">
+              <label htmlFor="email" className="text-xs font-semibold text-foreground">
                 Email
               </label>
               <input
@@ -96,13 +99,13 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@contoh.ac.id"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="studentNumber" className="text-xs font-semibold text-slate-700">
-                NIM <span className="font-normal text-slate-400">(opsional)</span>
+              <label htmlFor="studentNumber" className="text-xs font-semibold text-foreground">
+                NIM <span className="font-normal text-muted-foreground">(opsional)</span>
               </label>
               <input
                 id="studentNumber"
@@ -110,13 +113,13 @@ export default function RegisterPage() {
                 value={studentNumber}
                 onChange={(e) => setStudentNumber(e.target.value)}
                 placeholder="K3523xxx"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-xs font-semibold text-slate-700">
-                Kata Sandi
+              <label htmlFor="password" className="text-xs font-semibold text-foreground">
+                Kata sandi
               </label>
               <input
                 id="password"
@@ -126,29 +129,25 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimal 8 karakter"
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
 
             {error && (
-              <p className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
                 {error}
               </p>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm disabled:opacity-60 transition-colors"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
-              <span>{loading ? "Memproses..." : "Daftar"}</span>
-            </button>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              {loading ? "Memproses..." : "Daftar"}
+            </Button>
           </form>
 
-          <p className="text-center text-sm text-slate-500">
+          <p className="text-center text-sm text-muted-foreground">
             Sudah punya akun?{" "}
-            <Link href="/login" className="font-semibold text-blue-600 hover:underline">
+            <Link href="/login" className="font-semibold text-accent hover:underline">
               Masuk
             </Link>
           </p>

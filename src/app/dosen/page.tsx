@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/shared/Navbar";
 import {
@@ -6,26 +5,24 @@ import {
   Download,
   AlertTriangle,
   Users,
-  CheckCircle2,
   FileQuestion,
-  HelpCircle,
-  Database,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { attempts, attemptErrors, questions, users } from "@/lib/db/schema";
 import { sql, eq, desc } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth/session";
+import { Card } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function InstructorDashboardPage() {
-  // FR-02: hanya instructor yang boleh membuka panel dosen
   const user = await getCurrentUser();
   if (!user || user.role !== "instructor") {
     redirect("/login");
   }
 
-  // Fetch real analytics data
   const [totalAttemptsResult] = await db
     .select({ count: sql<number>`count(*)` })
     .from(attempts);
@@ -40,7 +37,6 @@ export default async function InstructorDashboardPage() {
   const successRate =
     totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 0;
 
-  // Error patterns breakdown
   const errorDistribution = await db
     .select({
       code: attemptErrors.errorCode,
@@ -52,7 +48,6 @@ export default async function InstructorDashboardPage() {
     .orderBy(desc(sql`count(*)`))
     .limit(8);
 
-  // Hardest questions
   const hardestQuestions = await db
     .select({
       code: questions.code,
@@ -66,7 +61,6 @@ export default async function InstructorDashboardPage() {
     .orderBy(desc(sql`sum(case when ${attempts.status} != 'correct' then 1 else 0 end)`))
     .limit(5);
 
-  // Students needing attention
   const strugglingStudents = await db
     .select({
       name: users.name,
@@ -83,74 +77,67 @@ export default async function InstructorDashboardPage() {
     .limit(5);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar role="instructor" />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-6 sm:p-8 space-y-8">
+      <main className="page-container space-y-9">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 mb-1.5 uppercase tracking-wider">
-              <BarChart3 className="w-4 h-4" />
-              <span>Panel Dosen & Asisten Praktikum</span>
-            </div>
-            <h1 className="text-2xl font-extrabold text-slate-900 mb-1">
-              Analitik Pola Kesalahan SQL JOIN
-            </h1>
-            <p className="text-sm text-slate-600">
-              Evaluasi pola miskonsepsi sintaks vs konsep relasi mahasiswa berdasarkan data 20 detector rule-based.
+            <span className="page-eyebrow flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Panel dosen & asisten praktikum
+            </span>
+            <h1 className="page-title mt-2">Analitik pola kesalahan SQL JOIN</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Evaluasi pola miskonsepsi sintaks vs konsep relasi mahasiswa
+              berdasarkan data 20 detector rule-based.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <a
-              href="/api/dosen/ekspor/percobaan"
-              download
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm transition-colors"
-            >
-              <Download className="w-4 h-4 text-slate-500" />
-              <span>Ekspor Rekap (CSV)</span>
-            </a>
+          <a
+            href="/api/dosen/ekspor/percobaan"
+            download
+            className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
+          >
+            <Download className="h-4 w-4 text-accent" />
+            Ekspor rekap (CSV)
+          </a>
+        </div>
+
+        {/* Metrics — one panel, hairline dividers */}
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-3">
+          <div className="bg-card p-5">
+            <p className="text-xs font-medium text-muted-foreground">Total submission</p>
+            <p className="mt-1 text-3xl font-semibold text-foreground">
+              {totalAttempts}
+            </p>
+          </div>
+          <div className="bg-card p-5">
+            <p className="text-xs font-medium text-muted-foreground">Rasio keberhasilan</p>
+            <p className="mt-1 text-3xl font-semibold text-success">
+              {successRate}%
+            </p>
+          </div>
+          <div className="bg-card p-5">
+            <p className="text-xs font-medium text-muted-foreground">Detector terpicu</p>
+            <p className="mt-1 text-3xl font-semibold text-accent">
+              {errorDistribution.length}
+            </p>
           </div>
         </div>
 
-        {/* Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <span className="text-xs font-medium text-slate-500">Total Submission</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 mt-1">
-              {totalAttempts} Percobaan
-            </h3>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <span className="text-xs font-medium text-slate-500">Rasio Keberhasilan</span>
-            <h3 className="text-2xl font-extrabold text-emerald-600 mt-1">
-              {successRate}% Benar
-            </h3>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <span className="text-xs font-medium text-slate-500">Detector Terpicu</span>
-            <h3 className="text-2xl font-extrabold text-blue-600 mt-1">
-              {errorDistribution.length} Jenis Pola
-            </h3>
-          </div>
-        </div>
-
-        {/* 2 Column Analytics: Error Distribution vs Hardest Questions */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Error Distribution Bar Chart Card */}
-          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-500" />
-                <span>Distribusi Kode Kesalahan Terbanyak</span>
-              </h2>
-            </div>
+        {/* Two-column analytics */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Error distribution */}
+          <Card className="space-y-4 p-6 lg:col-span-7">
+            <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <AlertTriangle className="h-4 w-4 text-warning" />
+              Distribusi kode kesalahan terbanyak
+            </h2>
 
             {errorDistribution.length === 0 ? (
-              <p className="text-xs text-slate-400 py-8 text-center">
+              <p className="py-8 text-center text-xs text-muted-foreground">
                 Belum ada data kesalahan yang tercatat.
               </p>
             ) : (
@@ -163,20 +150,20 @@ export default async function InstructorDashboardPage() {
                     <div key={item.code} className="space-y-1">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-slate-800">
+                          <span className="font-mono font-bold text-foreground">
                             {item.code}
                           </span>
-                          <span className="text-slate-500 text-[11px]">
+                          <span className="text-[11px] text-muted-foreground">
                             ({item.category.replace("_", " ")})
                           </span>
                         </div>
-                        <span className="font-semibold text-slate-700">
+                        <span className="font-semibold text-foreground">
                           {item.count} kali
                         </span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                         <div
-                          className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                          className="h-full bg-accent transition-all duration-500"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -185,81 +172,79 @@ export default async function InstructorDashboardPage() {
                 })}
               </div>
             )}
-          </div>
+          </Card>
 
-          {/* Hardest Questions Card */}
-          <div className="lg:col-span-5 bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <FileQuestion className="w-4 h-4 text-red-500" />
-              <span>Soal dengan Kesalahan Tertinggi</span>
+          {/* Hardest questions */}
+          <Card className="space-y-4 p-6 lg:col-span-5">
+            <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <FileQuestion className="h-4 w-4 text-destructive" />
+              Soal dengan kesalahan tertinggi
             </h2>
 
             {hardestQuestions.length === 0 ? (
-              <p className="text-xs text-slate-400 py-8 text-center">
+              <p className="py-8 text-center text-xs text-muted-foreground">
                 Belum ada data percobaan soal.
               </p>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y">
                 {hardestQuestions.map((q) => (
-                  <div key={q.code} className="py-2.5 flex items-center justify-between gap-2">
+                  <div key={q.code} className="flex items-center justify-between gap-2 py-2.5">
                     <div>
-                      <span className="font-mono text-xs font-bold text-blue-600">
-                        {q.code}
-                      </span>
-                      <h4 className="text-xs font-medium text-slate-800 truncate max-w-[200px]">
+                      <span className="font-mono text-xs font-bold text-accent">{q.code}</span>
+                      <h4 className="max-w-[200px] truncate text-xs font-medium text-foreground">
                         {q.title}
                       </h4>
                     </div>
-                    <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100">
+                    <span className="rounded border border-destructive/30 bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
                       {q.failedCount} gagal / {q.totalAttempts}
                     </span>
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
-        {/* Struggling Students Table */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Users className="w-4 h-4 text-purple-600" />
-            <span>Mahasiswa yang Memerlukan Perhatian / Asistensi</span>
+        {/* Struggling students */}
+        <Card className="space-y-4 p-6">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <Users className="h-4 w-4 text-accent" />
+            Mahasiswa yang memerlukan perhatian / asistensi
           </h2>
 
           {strugglingStudents.length === 0 ? (
-            <p className="text-xs text-slate-400 py-6 text-center">
+            <p className="py-6 text-center text-xs text-muted-foreground">
               Belum ada data mahasiswa yang terdeteksi kesulitan.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <thead className="border-b bg-muted/50 text-muted-foreground">
                   <tr>
-                    <th className="p-3 font-semibold">Nama Mahasiswa</th>
+                    <th className="p-3 font-semibold">Nama mahasiswa</th>
                     <th className="p-3 font-semibold">NIM</th>
                     <th className="p-3 font-semibold">Email</th>
-                    <th className="p-3 font-semibold">Total Percobaan</th>
-                    <th className="p-3 font-semibold">Percobaan Gagal</th>
+                    <th className="p-3 font-semibold">Total percobaan</th>
+                    <th className="p-3 font-semibold">Percobaan gagal</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y">
                   {strugglingStudents.map((st) => (
-                    <tr key={st.email} className="hover:bg-slate-50/50">
-                      <td className="p-3 font-bold text-slate-800">{st.name}</td>
-                      <td className="p-3 font-mono text-slate-600">{st.studentNumber || "-"}</td>
-                      <td className="p-3 text-slate-500">{st.email}</td>
-                      <td className="p-3 text-slate-700">{st.totalAttempts}</td>
-                      <td className="p-3 font-bold text-red-600">
-                        {st.failedCount} kali
+                    <tr key={st.email} className="transition-colors hover:bg-muted/40">
+                      <td className="p-3 font-semibold text-foreground">{st.name}</td>
+                      <td className="p-3 font-mono text-muted-foreground">
+                        {st.studentNumber || "-"}
                       </td>
+                      <td className="p-3 text-muted-foreground">{st.email}</td>
+                      <td className="p-3 text-foreground">{st.totalAttempts}</td>
+                      <td className="p-3 font-bold text-destructive">{st.failedCount} kali</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-        </div>
+        </Card>
       </main>
     </div>
   );

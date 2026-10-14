@@ -14,6 +14,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface FeedbackPanelProps {
   feedback: FeedbackPayload | null;
@@ -44,75 +47,74 @@ export function FeedbackPanel({ feedback, onOpenHint }: FeedbackPanelProps) {
 
   return (
     <div
-      className={`border rounded-xl p-5 shadow-sm transition-all animate-in fade-in-50 ${
+      className={cn(
+        "rounded-lg border p-5 transition-all",
         isCorrect
-          ? "bg-emerald-50/70 border-emerald-300 text-emerald-950"
+          ? "border-success/30 bg-success/10"
           : isIncorrect
-          ? "bg-red-50/60 border-red-200 text-slate-900"
-          : "bg-amber-50/60 border-amber-200 text-slate-900"
-      }`}
+          ? "border-destructive/30 bg-destructive/10"
+          : "border-warning/30 bg-warning/10"
+      )}
     >
-      {/* Verdict Header */}
-      <div className="flex items-start justify-between gap-4 mb-3">
+      {/* Verdict header */}
+      <div className="mb-3 flex items-start justify-between gap-4">
         <div className="flex items-center gap-2.5">
           {isCorrect ? (
-            <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+            <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-success" />
           ) : isIncorrect ? (
-            <XCircle className="w-6 h-6 text-red-600 flex-shrink-0" />
+            <XCircle className="h-6 w-6 flex-shrink-0 text-destructive" />
           ) : (
-            <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0" />
+            <AlertTriangle className="h-6 w-6 flex-shrink-0 text-warning" />
           )}
           <span
-            className={`font-bold text-base ${
+            className={cn(
+              "text-base font-bold",
               isCorrect
-                ? "text-emerald-800"
+                ? "text-success"
                 : isIncorrect
-                ? "text-red-800"
-                : "text-amber-800"
-            }`}
+                ? "text-destructive"
+                : "text-warning"
+            )}
           >
             {isCorrect
-              ? "Jawaban Tepat!"
+              ? "Jawaban tepat"
               : isIncorrect
-              ? "Jawaban Belum Tepat"
-              : "Eksekusi Mengalami Kendala"}
+              ? "Jawaban belum tepat"
+              : "Eksekusi mengalami kendala"}
           </span>
         </div>
 
-        {/* Action Link: Soal Setara / Next */}
         <div className="flex items-center gap-2">
           {feedback.next?.retry_equivalent_url && (
             <Link
               href={feedback.next.retry_equivalent_url}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
-              <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
-              <span>Coba Soal Setara</span>
+              <RefreshCw className="h-3.5 w-3.5 text-accent" />
+              Coba Soal Setara
             </Link>
           )}
 
           {isCorrect && feedback.next?.next_question_url && (
             <Link
               href={feedback.next.next_question_url}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm"
+              className={buttonVariants({ variant: "default", size: "sm" })}
             >
-              <span>Soal Berikutnya</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Soal Berikutnya
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           )}
         </div>
       </div>
 
-      {/* Summary */}
-      <p className="text-sm text-slate-700 mb-4 leading-relaxed font-medium">
+      <p className="mb-4 text-sm font-medium leading-relaxed text-foreground">
         {feedback.summary}
       </p>
 
-      {/* Findings List (E01 - E20) */}
       {feedback.findings && feedback.findings.length > 0 && (
-        <div className="space-y-3.5 mt-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Analisis Diagnosis Logika:
+        <div className="mt-4 space-y-3.5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Analisis diagnosis logika
           </p>
 
           {feedback.findings.map((f: Finding) => {
@@ -120,77 +122,68 @@ export function FeedbackPanel({ feedback, onOpenHint }: FeedbackPanelProps) {
             const isEvidenceOpen = showEvidence[f.code] || false;
 
             return (
-              <div
-                key={f.code}
-                className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-sm"
-              >
-                <div className="flex items-start justify-between gap-2 mb-1.5">
+              <div key={f.code} className="rounded-md border bg-card p-4">
+                <div className="mb-1.5 flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                    <span className="rounded border bg-muted px-2 py-0.5 font-mono text-[11px] font-bold text-muted-foreground">
                       {f.code}
                     </span>
-                    <h4 className="font-semibold text-sm text-slate-900">
-                      {f.title}
-                    </h4>
+                    <h4 className="text-sm font-semibold text-foreground">{f.title}</h4>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">
-                    {f.category.replace("_", " ")}
-                  </span>
+                  <Badge variant="outline">{f.category.replace("_", " ")}</Badge>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
                   {f.explanation}
                 </p>
 
-                {/* Evidence accordion if available */}
                 {f.evidence && Object.keys(f.evidence).length > 0 && (
                   <div className="mb-3 text-xs">
                     <button
                       type="button"
                       onClick={() => toggleEvidence(f.code)}
-                      className="text-slate-500 hover:text-slate-800 font-medium flex items-center gap-1"
+                      className="flex items-center gap-1 font-medium text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      <span>Bukti Temuan Data</span>
+                      <span>Bukti temuan data</span>
                       {isEvidenceOpen ? (
-                        <ChevronUp className="w-3.5 h-3.5" />
+                        <ChevronUp className="h-3.5 w-3.5" />
                       ) : (
-                        <ChevronDown className="w-3.5 h-3.5" />
+                        <ChevronDown className="h-3.5 w-3.5" />
                       )}
                     </button>
                     {isEvidenceOpen && (
-                      <pre className="mt-1.5 p-2 bg-slate-50 border rounded text-[11px] font-mono text-slate-700 overflow-x-auto">
+                      <pre className="mt-1.5 overflow-x-auto rounded border bg-muted p-2 font-mono text-[11px] text-foreground">
                         {JSON.stringify(f.evidence, null, 2)}
                       </pre>
                     )}
                   </div>
                 )}
 
-                {/* 3-Level Progressive Hints */}
                 {f.hints && f.hints.length > 0 && (
-                  <div className="border-t border-slate-100 pt-3 mt-2">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5 text-xs text-amber-700 font-medium">
-                        <Lightbulb className="w-4 h-4 text-amber-500" />
-                        <span>Petunjuk Bertahap ({currentHintLvl}/3)</span>
+                  <div className="mt-2 border-t pt-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-warning">
+                        <Lightbulb className="h-4 w-4" />
+                        Petunjuk bertahap ({currentHintLvl}/3)
                       </div>
                       {currentHintLvl < 3 && (
                         <button
                           type="button"
                           onClick={() => handleNextHint(f.code)}
-                          className="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                          className="text-xs font-semibold text-accent hover:underline"
                         >
                           {currentHintLvl === 0
-                            ? "Butuh Petunjuk?"
-                            : "Buka Petunjuk Lanjutan"}
+                            ? "Butuh petunjuk?"
+                            : "Buka petunjuk lanjutan"}
                         </button>
                       )}
                     </div>
 
                     {currentHintLvl > 0 && (
-                      <div className="space-y-1.5 bg-amber-50/60 border border-amber-200/80 rounded-md p-3 text-xs text-amber-950">
+                      <div className="space-y-1.5 rounded-md border border-warning/30 bg-warning/10 p-3 text-xs text-foreground">
                         {f.hints.slice(0, currentHintLvl).map((h, hIdx) => (
                           <div key={hIdx} className="flex items-start gap-2">
-                            <span className="font-bold text-amber-700 select-none">
+                            <span className="select-none font-bold text-warning">
                               Tingkat {hIdx + 1}:
                             </span>
                             <span>{h}</span>

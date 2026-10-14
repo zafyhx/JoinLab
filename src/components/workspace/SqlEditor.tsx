@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
 
 interface SqlEditorProps {
@@ -11,19 +11,18 @@ interface SqlEditorProps {
 }
 
 export function SqlEditor({ value, onChange, onRun, disabled }: SqlEditorProps) {
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
 
-    // Register Ctrl+Enter / Cmd+Enter shortcut
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
       onRun();
     });
   };
 
   return (
-    <div className="relative w-full h-[260px] border rounded-lg overflow-hidden bg-slate-950 font-mono text-sm shadow-inner">
+    <div className="relative h-[260px] w-full overflow-hidden rounded-md border border-ink-border bg-ink font-mono text-sm">
       <Editor
         height="100%"
         defaultLanguage="sql"

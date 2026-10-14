@@ -11,9 +11,10 @@ import {
   CheckCircle2,
   Clock,
   Layers,
-  Sparkles,
   Lock,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -22,20 +23,17 @@ interface PageProps {
 export default async function SchemaQuestionsPage({ params }: PageProps) {
   const { slug } = await params;
 
-  // 1. Fetch all schemas for navigation
   const allSchemas = await db
     .select()
     .from(schemaDefinitions)
     .where(eq(schemaDefinitions.isActive, true))
     .orderBy(asc(schemaDefinitions.sortOrder));
 
-  // 2. Fetch current schema
   const currentSchema = allSchemas.find((s) => s.slug === slug);
   if (!currentSchema) {
     notFound();
   }
 
-  // 3. Fetch questions for current schema
   const questionList = await db
     .select()
     .from(questions)
@@ -47,7 +45,6 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
     )
     .orderBy(asc(questions.level), asc(questions.code));
 
-  // 4. Fetch user progress
   const student = await getEffectiveStudent();
   const progressList = await db
     .select()
@@ -60,8 +57,6 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
   }
 
   // FR-17: Level locking — aktif hanya jika JOINLAB_LEVEL_LOCKING=true
-  // (default mati sesuai dokumen 01). Level N terkunci sampai persentase
-  // soal selesai pada level N-1 mencapai JOINLAB_LEVEL_LOCK_MIN_PERCENT.
   const levelLockingEnabled = process.env.JOINLAB_LEVEL_LOCKING === "true";
   const lockMinPercent = parseInt(
     process.env.JOINLAB_LEVEL_LOCK_MIN_PERCENT ?? "60",
@@ -70,7 +65,7 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
 
   const lockedLevels = new Set<number>();
   if (levelLockingEnabled) {
-    let prevPercent = 100; // Level 1 selalu terbuka
+    let prevPercent = 100;
     for (let lv = 1; lv <= 3; lv++) {
       if (lv > 1 && prevPercent < lockMinPercent) {
         lockedLevels.add(lv);
@@ -81,42 +76,39 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
     }
   }
 
-  // Group questions by Level
   const levels = [
-    { level: 1, title: "Level 1: Dasar (INNER JOIN 2 Tabel)", desc: "Pemahaman kunci penghubung PK-FK dan penggabungan dasar." },
-    { level: 2, title: "Level 2: Menengah (LEFT JOIN & 3 Tabel)", desc: "Menangani data tanpa pasangan (NULL) dan relasi bertingkat." },
-    { level: 3, title: "Level 3: Lanjut (Agregasi, GROUP BY, Filter)", desc: "Menggabungkan JOIN dengan fungsi agregat (COUNT, SUM, AVG) dan urutan." },
+    { level: 1, title: "Level 1: Dasar (INNER JOIN 2 tabel)", desc: "Pemahaman kunci penghubung PK-FK dan penggabungan dasar." },
+    { level: 2, title: "Level 2: Menengah (LEFT JOIN & 3 tabel)", desc: "Menangani data tanpa pasangan (NULL) dan relasi bertingkat." },
+    { level: 3, title: "Level 3: Lanjut (Agregasi, GROUP BY, filter)", desc: "Menggabungkan JOIN dengan fungsi agregat (COUNT, SUM, AVG) dan urutan." },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-6 sm:p-8">
-        {/* Schema Header */}
+      <main className="page-container">
+        {/* Schema header */}
         <div className="mb-8">
-          <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 mb-1.5 uppercase tracking-wider">
-            <Database className="w-4 h-4" />
-            <span>Skema Database Latihan</span>
-          </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 mb-2">
-            {currentSchema.name}
-          </h1>
-          <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+          <span className="page-eyebrow flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            Skema database latihan
+          </span>
+          <h1 className="page-title mt-2">{currentSchema.name}</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
             {currentSchema.description}
           </p>
 
-          {/* Schema Switcher Tabs */}
-          <div className="flex flex-wrap gap-2 mt-6">
+          <div className="mt-6 flex flex-wrap gap-2">
             {allSchemas.map((s) => (
               <Link
                 key={s.slug}
                 href={`/skema/${s.slug}`}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                className={cn(
+                  "rounded-md px-4 py-2 text-xs font-semibold transition-colors",
                   s.slug === slug
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
-                }`}
+                    ? "bg-primary text-primary-foreground"
+                    : "border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
               >
                 {s.name}
               </Link>
@@ -124,8 +116,8 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Question Sections by Level */}
-        <div className="space-y-8">
+        {/* Question sections by level */}
+        <div className="space-y-9">
           {levels.map((lvl) => {
             const levelQuestions = questionList.filter((q) => q.level === lvl.level);
             if (levelQuestions.length === 0) return null;
@@ -133,26 +125,26 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
 
             return (
               <div key={lvl.level} className="space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <div className="flex items-center justify-between border-b pb-2">
                   <div>
-                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-blue-600" />
-                      <span>{lvl.title}</span>
+                    <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+                      <Layers className="h-4 w-4 text-accent" />
+                      {lvl.title}
                       {isLevelLocked && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
-                          <Lock className="w-3 h-3" />
+                        <Badge variant="outline">
+                          <Lock className="h-3 w-3" />
                           Terkunci
-                        </span>
+                        </Badge>
                       )}
                     </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">{lvl.desc}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{lvl.desc}</p>
                   </div>
-                  <span className="text-xs font-semibold text-slate-500">
-                    {levelQuestions.length} Soal
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {levelQuestions.length} soal
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {levelQuestions.map((q) => {
                     const status = progressMap.get(q.id) || "not_started";
                     const isSolved = status === "solved";
@@ -162,61 +154,60 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
                     const cardBody = (
                       <>
                         <div>
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 group-hover:bg-blue-50 group-hover:text-blue-700 transition-colors">
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <span className="rounded border bg-muted px-2 py-0.5 font-mono text-xs font-bold text-foreground transition-colors group-hover:text-accent">
                               {q.code}
                             </span>
 
-                            {/* Status badge */}
                             {isLocked ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                                <Lock className="w-3 h-3" />
+                              <Badge variant="outline">
+                                <Lock className="h-3 w-3" />
                                 Terkunci
-                              </span>
+                              </Badge>
                             ) : isSolved ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                                <CheckCircle2 className="w-3 h-3" />
+                              <Badge variant="success">
+                                <CheckCircle2 className="h-3 w-3" />
                                 Selesai
-                              </span>
+                              </Badge>
                             ) : isAttempted ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                                <Clock className="w-3 h-3" />
+                              <Badge variant="warning">
+                                <Clock className="h-3 w-3" />
                                 Dicoba
-                              </span>
+                              </Badge>
                             ) : (
-                              <span className="text-[11px] font-medium text-slate-400">
-                                Belum Dikerjakan
+                              <span className="text-[11px] font-medium text-muted-foreground">
+                                Belum dikerjakan
                               </span>
                             )}
                           </div>
 
-                          <h3 className="font-bold text-sm text-slate-900 group-hover:text-blue-600 transition-colors mb-1.5">
+                          <h3 className="mb-1.5 text-sm font-semibold text-foreground transition-colors group-hover:text-accent">
                             {q.title}
                           </h3>
 
-                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-3">
+                          <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                             {q.prompt}
                           </p>
                         </div>
 
-                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <div className="flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
                           <div className="flex flex-wrap gap-1">
                             {(q.conceptTags as string[]).slice(0, 2).map((c) => (
                               <span
                                 key={c}
-                                className="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] text-slate-600 font-medium"
+                                className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
                               >
                                 {c.replace("_", " ")}
                               </span>
                             ))}
                           </div>
                           {isLocked ? (
-                            <span className="font-medium text-slate-400 flex items-center gap-1">
+                            <span className="flex items-center gap-1 font-medium text-muted-foreground">
                               Butuh {lockMinPercent}% level sebelumnya
                             </span>
                           ) : (
-                            <span className="font-semibold text-blue-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                              Buka Soal <ArrowRight className="w-3.5 h-3.5" />
+                            <span className="flex items-center gap-1 font-semibold text-accent transition-transform group-hover:translate-x-1">
+                              Buka soal <ArrowRight className="h-3.5 w-3.5" />
                             </span>
                           )}
                         </div>
@@ -227,7 +218,7 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
                       return (
                         <div
                           key={q.code}
-                          className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between opacity-70 select-none"
+                          className="flex select-none flex-col justify-between rounded-lg border bg-card p-5 opacity-70"
                         >
                           {cardBody}
                         </div>
@@ -238,7 +229,7 @@ export default async function SchemaQuestionsPage({ params }: PageProps) {
                       <Link
                         key={q.code}
                         href={`/soal/${q.code}`}
-                        className="group bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between"
+                        className="group flex flex-col justify-between rounded-lg border bg-card p-5 transition-colors hover:border-accent/50"
                       >
                         {cardBody}
                       </Link>

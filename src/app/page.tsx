@@ -1,129 +1,190 @@
 import Link from "next/link";
-import {
-  Database,
-  Cpu,
-  Layers,
-  ArrowRight,
-  ShieldCheck,
-  Zap,
-  GraduationCap,
-} from "lucide-react";
+import { ArrowRight, ShieldCheck, GraduationCap } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* Top Navbar */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-              JL
-            </div>
-            <span className="font-extrabold text-xl text-slate-900 tracking-tight">
-              Join<span className="text-blue-600">Lab</span>
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/dosen"
-              className="text-xs font-semibold px-3 py-2 text-slate-600 hover:text-slate-900 transition-colors"
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b bg-card">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
+          <Link href="/" className="flex items-center gap-2">
+            <span
+              aria-hidden
+              className="text-2xl font-semibold leading-none text-accent"
             >
-              Panel Dosen
+              ⋈
+            </span>
+            <span className="text-xl font-semibold tracking-tight text-foreground">
+              JoinLab
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/login"
+              className={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              Masuk
             </Link>
             <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
+              href="/register"
+              className={buttonVariants({ variant: "default", size: "sm" })}
             >
-              <span>Masuk Workspace</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Mulai Latihan
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
       <main className="flex-1">
-        <section className="py-16 sm:py-24 px-6 max-w-5xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
-            <Zap className="w-3.5 h-3.5" />
-            <span>Tugas Mata Kuliah Pengembangan Software Edukasi</span>
-          </div>
+        {/* Hero — asymmetric, proof-led */}
+        <section className="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <div className="max-w-xl">
+              <span className="page-eyebrow">Platform praktikum basis data relasional</span>
+              <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight text-foreground sm:text-6xl">
+                Pahami <span className="text-accent">JOIN</span> lewat diagnosis
+                logika, bukan sekadar benar atau salah.
+              </h1>
+              <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
+                JoinLab melatih mahasiswa menulis query SQL JOIN pada skema
+                database nyata, lalu mendiagnosis akar penyebab kesalahan
+                penggabungan tabel secara rule based tanpa menebak.
+              </p>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight">
-            Kuasai <span className="text-blue-600">SQL JOIN</span> dengan Analisis Logika Instan
-          </h1>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/dashboard"
+                  className={buttonVariants({ variant: "default", size: "lg" })}
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  Mulai Latihan Mahasiswa
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/dosen"
+                  className={buttonVariants({ variant: "outline", size: "lg" })}
+                >
+                  <ShieldCheck className="h-4 w-4 text-accent" />
+                  Lihat Analitik Dosen
+                </Link>
+              </div>
+            </div>
 
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Platform interaktif untuk mahasiswa praktikum basis data relasional. Mendiagnosis bukan sekadar benar/salah, melainkan akar penyebab kesalahan penggabungan tabel secara rule-based.
-          </p>
+            {/* Proof object — a real JOIN, not a stock illustration */}
+            <div className="relative">
+              <div className="rounded-lg border border-ink-border bg-ink p-5 font-mono text-sm shadow-lg">
+                <div className="mb-4 flex items-center gap-2 text-xs text-background/60">
+                  <span className="h-2.5 w-2.5 rounded-full bg-destructive/80" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-warning/80" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-success/80" />
+                  <span className="ml-2 font-sans">query.sql</span>
+                </div>
+                <pre className="leading-relaxed text-background/90">
+                  <code>
+                    <span className="text-background/55">SELECT</span> m.nama,
+                    j.nama_jurusan{"\n"}
+                    <span className="text-background/55">FROM</span> mahasiswa m{"\n"}
+                    <span className="text-[oklch(0.75_0.15_78)]">JOIN</span> jurusan j{"\n"}
+                    {"  "}
+                    <span className="text-background/55">ON</span> m.jurusan_id = j.id;
+                  </code>
+                </pre>
+              </div>
 
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all"
-            >
-              <GraduationCap className="w-5 h-5" />
-              <span>Mulai Latihan Mahasiswa</span>
-            </Link>
-
-            <Link
-              href="/dosen"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 shadow-sm transition-all"
-            >
-              <ShieldCheck className="w-5 h-5 text-blue-600" />
-              <span>Lihat Analitik Dosen</span>
-            </Link>
+              <div className="mt-4 flex items-center justify-between rounded-lg border bg-card px-4 py-3 text-sm">
+                <span className="font-mono text-foreground">mahasiswa</span>
+                <span className="text-2xl text-accent">⋈</span>
+                <span className="font-mono text-foreground">jurusan</span>
+                <span className="text-xs text-muted-foreground">→ 24 baris</span>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Feature Grid */}
-        <section className="py-12 bg-white border-y border-slate-200 px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl font-black text-slate-900 mb-2">
-                Dirancang untuk Mengatasi Kesulitan Nyata
+        {/* How it works — a numbered path, not a tile grid */}
+        <section className="border-y bg-card">
+          <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+              Tiga langkah sampai paham akarnya
+            </h2>
+
+            <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-lg border bg-border md:grid-cols-3">
+              {[
+                {
+                  n: "01",
+                  title: "Tulis query",
+                  body: "Mulai dari templat SELECT, lengkapi JOIN dan kondisi ON pada editor dengan sorotan sintaks.",
+                },
+                {
+                  n: "02",
+                  title: "Jalankan di sandbox",
+                  body: "Query dieksekusi pada koneksi read-only yang terisolasi, bukan di database aplikasi.",
+                },
+                {
+                  n: "03",
+                  title: "Baca diagnosis logika",
+                  body: "Dapatkan feedback akar penyebab dari 20 detector: cartesian product, kunci salah, hingga NULL.",
+                },
+              ].map((step) => (
+                <div key={step.n} className="bg-card p-6">
+                  <span className="text-3xl font-semibold text-accent">
+                    {step.n}
+                  </span>
+                  <h3 className="mt-3 text-base font-semibold text-foreground">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {step.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* What you get — a single panel with dividers */}
+        <section className="mx-auto max-w-7xl px-6 py-16 sm:px-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-4">
+              <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+                Dibangun untuk kesulitan nyata, bukan sekadar kuis.
               </h2>
-              <p className="text-sm text-slate-500 max-w-xl mx-auto">
-                Berdasarkan temuan riset edukasi SQL: logical errors (cartesian product, wrong keys) lebih sering muncul dan sulit dideteksi mahasiswa.
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                Logical error seperti cartesian product dan pemilihan kunci yang
+                salah lebih sering muncul dan lebih sulit dikenali mahasiswa.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
-                  <Cpu className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold text-base text-slate-900">
-                  20 Rule-Based Detectors
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Mendeteksi cartesian product (E02), syarat hilang (E01), kunci salah (E03), penanganan NULL (E13), hingga fan-out tanpa menggunakan AI.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                  <Database className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold text-base text-slate-900">
-                  3 Skema Database Nyata
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Latihan di skema Akademik, Toko Online Retail, dan Sirkulasi Perpustakaan yang dilengkapi visualisasi Entity Relationship Diagram (ERD) interaktif.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
-                  <Layers className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold text-base text-slate-900">
-                  30 Soal Bertingkat & Varian
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Tersedia 3 level kesulitan dengan fitur &quot;Coba Soal Setara&quot; agar mahasiswa dapat mengulang konsep yang belum dikuasai pada entitas berbeda.
-                </p>
+            <div className="lg:col-span-8">
+              <div className="divide-y rounded-lg border bg-card">
+                {[
+                  {
+                    k: "20 detector",
+                    v: "Aturan E01–E20 mendeteksi syarat hilang, cartesian product, kunci salah, hingga fan-out tanpa AI.",
+                  },
+                  {
+                    k: "3 skema nyata",
+                    v: "Akademik, Toko Retail, dan Perpustakaan dengan visualisasi ERD interaktif.",
+                  },
+                  {
+                    k: "30 soal bertingkat",
+                    v: "Tiga level kesulitan dengan fitur &quot;Soal Setara&quot; untuk mengulang konsep yang belum dikuasai.",
+                  },
+                ].map((row) => (
+                  <div
+                    key={row.k}
+                    className="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-4"
+                  >
+                    <span className="text-sm font-semibold text-accent sm:col-span-1">
+                      {row.k}
+                    </span>
+                    <p className="text-sm leading-relaxed text-muted-foreground sm:col-span-3">
+                      {row.v}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -131,8 +192,21 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-6 px-6 text-center text-xs text-slate-500">
-        JoinLab • Mata Kuliah Pengembangan Software Edukasi 2026 • Universitas Sebelas Maret
+      <footer className="border-t bg-card">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-2 px-6 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:px-8">
+          <span className="flex items-center gap-2">
+            <span aria-hidden className="text-base text-accent">
+              ⋈
+            </span>
+            <span className="text-sm font-semibold text-foreground">
+              JoinLab
+            </span>
+          </span>
+          <span>
+            Mata Kuliah Pengembangan Software Edukasi 2026 · Universitas Sebelas
+            Maret
+          </span>
+        </div>
       </footer>
     </div>
   );
