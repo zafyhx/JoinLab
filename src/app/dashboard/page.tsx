@@ -63,8 +63,8 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats — one panel, hairline dividers */}
-        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-3">
-          <div className="bg-card p-5">
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-white/80 bg-border/70 shadow-sm sm:grid-cols-3">
+          <div className="bg-card/85 p-5 backdrop-blur-sm">
             <p className="text-xs font-medium text-muted-foreground">
               Soal terselesaikan
             </p>
@@ -76,7 +76,7 @@ export default async function DashboardPage() {
               </span>
             </p>
           </div>
-          <div className="bg-card p-5">
+          <div className="bg-card/85 p-5 backdrop-blur-sm">
             <p className="text-xs font-medium text-muted-foreground">
               Benar pada percobaan pertama
             </p>
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
               </span>
             </p>
           </div>
-          <div className="bg-card p-5">
+          <div className="bg-card/85 p-5 backdrop-blur-sm">
             <p className="text-xs font-medium text-muted-foreground">
               Domain skema latihan
             </p>
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
                   : 0;
 
               return (
-                <Card key={s.slug} className="flex flex-col justify-between p-6">
+                <Card key={s.slug} className="flex flex-col justify-between p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
                   <div>
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-[11px] font-bold text-accent">

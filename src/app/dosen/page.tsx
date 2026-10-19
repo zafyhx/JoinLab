@@ -78,7 +78,7 @@ export default async function InstructorDashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Navbar role="instructor" />
+      <Navbar />
 
       <main className="page-container space-y-9">
         {/* Header */}

@@ -50,9 +50,9 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b bg-card px-6 py-4">
-        <Link href="/" className="inline-flex items-center gap-2">
-          <span aria-hidden className="text-2xl font-semibold leading-none text-accent">
+      <header className="border-b border-white/70 bg-background/75 px-5 py-4 backdrop-blur-xl sm:px-8">
+        <Link href="/" className="group inline-flex items-center gap-2.5">
+          <span aria-hidden className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-primary to-accent text-xl font-bold leading-none text-primary-foreground shadow-sm transition-transform group-hover:rotate-6">
             ⋈
           </span>
           <span className="text-xl font-semibold tracking-tight text-foreground">
@@ -61,8 +61,8 @@ export default function RegisterPage() {
         </Link>
       </header>
 
-      <main className="flex flex-1 items-center justify-center p-6">
-        <div className="w-full max-w-md space-y-6 rounded-lg border bg-card p-8">
+      <main className="flex flex-1 items-center justify-center p-5 sm:p-8">
+        <div className="w-full max-w-md space-y-6 rounded-2xl border border-white/80 bg-card/85 p-6 shadow-lg backdrop-blur-xl sm:p-8">
           <div className="space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               Buat akun mahasiswa

@@ -140,8 +140,8 @@ export function WorkspaceLayout({
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b bg-card">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
+      <header className="sticky top-0 z-30 border-b border-white/70 bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href={`/skema/${schema.slug}`}
@@ -207,7 +207,7 @@ export function WorkspaceLayout({
       <main className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-6 p-4 sm:p-6 lg:grid-cols-12">
         {/* Left pane: prompt & ERD */}
         <section className="flex flex-col gap-4 lg:col-span-5">
-          <div className="flex gap-1 rounded-t-lg border bg-card px-4 pt-3">
+          <div className="flex gap-1 rounded-t-xl border border-white/80 bg-card/85 px-4 pt-3 shadow-sm backdrop-blur-sm">
             <button
               type="button"
               onClick={() => setActiveTab("soal")}
@@ -236,7 +236,7 @@ export function WorkspaceLayout({
             </button>
           </div>
 
-          <div className="flex flex-1 flex-col rounded-b-lg border bg-card p-5">
+          <div className="flex flex-1 flex-col rounded-b-xl border border-t-0 border-white/80 bg-card/85 p-5 shadow-sm backdrop-blur-sm">
             {activeTab === "soal" ? (
               <div className="space-y-4">
                 <div>
@@ -320,7 +320,7 @@ export function WorkspaceLayout({
 
         {/* Right pane: editor + feedback + result */}
         <section className="flex flex-col gap-5 lg:col-span-7">
-          <div className="flex flex-col gap-2 rounded-lg border bg-card p-4">
+          <div className="flex flex-col gap-2 rounded-xl border border-white/80 bg-card/85 p-4 shadow-sm backdrop-blur-sm">
             <div className="mb-1 flex items-center justify-between">
               <span className="text-xs font-semibold text-foreground">Editor SQL</span>
               <span className="text-[11px] text-muted-foreground">
